@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>human-first</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&amp;family=Manrope:wght@400;600;800&amp;display=swap">
+<style>
+:root{--bg:#F5F7F6;--card:#FFFFFF;--ink:#10201E;--muted:#4C5E5B;--line:#D3DCDA;--accent:#0F7B6C;--on:#FFFFFF;--soft:#E1EFEC;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0C1716;--card:#142524;--ink:#F1F6F5;--muted:#A9BDBA;--line:#294542;--accent:#3FD1B8;--on:#0C1716;--soft:#18332F}}
+:root[data-theme="dark"]{--bg:#0C1716;--card:#142524;--ink:#F1F6F5;--muted:#A9BDBA;--line:#294542;--accent:#3FD1B8;--on:#0C1716;--soft:#18332F}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Cairo,Manrope,system-ui,sans-serif;line-height:1.6;-webkit-text-size-adjust:100%}
+.wrap{max-width:520px;margin:0 auto;padding:20px 20px 110px}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.brand{font-weight:800;font-size:22px}
+.tag{color:var(--muted);font-size:15px;margin:0 0 18px}
+button{font:inherit;cursor:pointer}
+button:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.ghost{background:none;border:1px solid var(--line);color:var(--ink);border-radius:999px;padding:6px 14px;font-weight:600}
+h2{font-size:25px;line-height:1.25;margin:0 0 12px;font-weight:800}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:14px}
+textarea{width:100%;min-height:100px;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;font:inherit;background:var(--bg);color:var(--ink);resize:vertical}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 16px}
+.chip{border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 16px;font-weight:600}
+.chip.on{background:var(--accent);border-color:var(--accent);color:var(--on)}
+.primary{width:100%;background:var(--accent);color:var(--on);border:0;border-radius:14px;padding:14px;font-weight:800;font-size:17px}
+.out{width:100%;text-align:start;background:var(--card);color:var(--ink);border:1.5px solid var(--line);border-radius:14px;padding:14px 16px;font-weight:700;margin-top:10px}
+.out:hover{border-color:var(--accent)}
+.nudge{background:var(--soft);border-radius:14px;padding:14px 16px;margin-bottom:14px;font-weight:600}
+.err{color:#B3261E;font-weight:600;margin:8px 0 0}
+.meta{color:var(--muted);font-size:14px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.del{background:none;border:0;color:var(--muted);text-decoration:underline;font-size:14px;padding:0}
+.keep{display:flex;gap:10px;align-items:center;margin:4px 0 14px;font-size:15px}
+.keep input{width:20px;height:20px;accent-color:var(--accent)}
+.phrase{background:var(--soft);border-radius:10px;padding:10px 12px;margin:10px 0;font-weight:600}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:center;gap:4px;padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px))}
+nav button{flex:1;max-width:130px;background:none;border:0;border-radius:12px;padding:10px 4px;font-weight:700;font-size:14px;color:var(--muted)}
+nav button.on{background:var(--soft);color:var(--accent)}
+.ring{display:block;margin:4px auto 8px}
+.ringfill{transition:stroke-dasharray 1.1s cubic-bezier(.2,.8,.2,1)}
+.bar{height:10px;border-radius:6px;background:var(--line);overflow:hidden;margin:6px 0 14px}
+.bar i{display:block;height:100%;background:var(--accent)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:96px;background:var(--ink);color:var(--bg);padding:10px 20px;border-radius:999px;font-weight:700;z-index:5}
+ul{padding-inline-start:20px;margin:8px 0}
+@media (prefers-reduced-motion:reduce){.ringfill{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><div class="brand">human-first</div><button class="ghost" id="langBtn" onclick="toggleLang()"></button></header>
+<p class="tag" id="tag"></p>
+<main id="app"></main>
+</div>
+<nav id="nav"></nav>
+<div id="toast" class="toast" hidden></div>
+<script>
+var T={
+ar:{tag:"قبل أن تسأل الذكاء الاصطناعي، فكّر دقيقة بنفسك.",tabs:["قبل أن أسأل","تعلّم","سجلّي","عن التطبيق"],lang:"English",
+q1:"ماذا ستسأل؟",q1p:"اكتب طلبك هنا (لن يُحفظ إلا إذا اخترت)",kind:"ما نوع الطلب؟",next:"التالي",need:"اكتب طلبك واختر نوعه أولًا.",
+q2:"ما أول فكرة عندك؟",q2p:"اكتب ما تظنه الآن، حتى لو كان ناقصًا",now:"ماذا ستفعل الآن؟",keep:"احفظ ملاحظتي على جهازي",
+o:{try:"سأجرّب بنفسي أولًا",ask:"سأسأل الذكاء الاصطناعي الآن",none:"لم أعد أحتاجه"},
+types:{homework:"تعلّم أو واجب",fact:"معلومة",advice:"قرار أو نصيحة",writing:"كتابة",feelings:"طمأنة أو مشاعر"},
+nudge:{homework:"جرّب الخطوة الأولى بنفسك، ثم اطلب تلميحًا لا الحل كاملًا. هكذا تتعلم فعلًا.",fact:"اسأل، لكن تذكّر أنه قد يخطئ. تأكد من أي معلومة مهمة من مصدر آخر.",advice:"قرار يخصك؟ اكتب خياراتك أولًا، واسأل شخصًا تثق به أيضًا. القرار قرارك.",writing:"اكتب مسودتك بأسلوبك أولًا، ثم اطلب تحسينها. كلماتك أهم من كلماته.",feelings:"إن كان الأمر يضايقك، تحدّث مع شخص تثق به أيضًا. الذكاء الاصطناعي ليس صديقًا ولا مختصًا."},
+saved:"تم الحفظ",empty:"لا يوجد شيء بعد. ابدأ من «قبل أن أسأل».",del:"حذف",
+total:"عدد المرات",ringText:"فكّرت أولًا أو لم أحتج",mirror:"ليست درجة ولا حكمًا، مجرد مرآة لعاداتك.",by:"حسب نوع الطلب",
+clear:"مسح كل بياناتي",confirm:"هل تريد مسح كل البيانات من هذا الجهاز؟",
+learn:"أربع أفكار تفيدك",
+tips:[["قد يخطئ بثقة","يكتب الذكاء الاصطناعي بنبرة واثقة حتى حين يخطئ. تحقق من المعلومات المهمة."],["اطلب تلميحًا","للواجبات، جرّب هذه الجملة بدل طلب الحل كاملًا:"],["احمِ أسرارك","لا تكتب اسمك الكامل أو عنوانك أو مدرستك أو كلمات المرور أو صورًا خاصة."],["الأمور المهمة للأشخاص","الذكاء الاصطناعي أداة. للأمور التي تهمّك حقًا، تحدّث مع شخص تثق به."]],
+phrase:"أعطني تلميحًا فقط، وليس الإجابة كاملة.",copy:"نسخ الجملة",copied:"تم النسخ",
+pt:"عن التطبيق",pb:["يساعدك هذا التطبيق على التفكير بنفسك قبل أن تلجأ إلى الذكاء الاصطناعي، ثم تستفيد منه بوعي. لا يحتوي على محادثة مع ذكاء اصطناعي."],pi:["لا حسابات ولا إعلانات ولا تتبّع.","كل شيء يبقى على جهازك، ولا يُحفظ نص ما تكتبه إلا إذا اخترت ذلك.","هو أداة للتأمل وليس علاجًا ولا تشخيصًا.","لست مضطرًا لاستخدامه يوميًا. الهدف الوعي وليس العدّاد."],contact:"للتواصل:"},
+en:{tag:"Before you ask AI, think for a minute yourself.",tabs:["Before I ask","Learn","My log","About"],lang:"العربية",
+q1:"What are you about to ask?",q1p:"Write it here (it’s only saved if you choose)",kind:"What kind of request is it?",next:"Next",need:"Write your request and pick its type first.",
+q2:"What’s your first thought?",q2p:"Write what you think right now, even if it’s incomplete",now:"What will you do now?",keep:"Save my note on this device",
+o:{try:"I’ll try myself first",ask:"I’ll ask AI now",none:"I don’t need it anymore"},
+types:{homework:"Learning or homework",fact:"Fact",advice:"Decision or advice",writing:"Writing",feelings:"Reassurance or feelings"},
+nudge:{homework:"Try the first step yourself, then ask for a hint, not the full answer. That’s how you actually learn.",fact:"Go ahead, but remember it can be wrong. Check anything important somewhere else.",advice:"A decision about you? Write your options first, and ask someone you trust too. It’s your call.",writing:"Write your own draft first, then ask for improvements. Your words matter more than its words.",feelings:"If something is bothering you, talk to someone you trust too. AI is not a friend or a professional."},
+saved:"Saved",empty:"Nothing here yet. Start from “Before I ask”.",del:"Delete",
+total:"Check-ins",ringText:"thought first or didn’t need it",mirror:"Not a score and not a judgment. Just a mirror of your habits.",by:"By type of request",
+clear:"Clear all my data",confirm:"Clear all data from this device?",
+learn:"Four ideas that help",
+tips:[["It can be confidently wrong","AI writes with a confident tone even when it’s wrong. Check the important facts."],["Ask for a hint","For homework, try this sentence instead of asking for the full solution:"],["Protect your secrets","Don’t type your full name, address, school, passwords or private photos."],["Important things are for people","AI is a tool. For what really matters to you, talk to someone you trust."]],
+phrase:"Give me a hint only, not the full answer.",copy:"Copy sentence",copied:"Copied",
+pt:"About this app",pb:["This app helps you think for yourself before turning to AI, then use it more consciously. It does not contain a chat with an AI."],pi:["No accounts, no ads, no tracking.","Everything stays on your device, and what you write is only saved if you choose.","It is a reflection tool, not treatment or diagnosis.","You don’t have to use it every day. The goal is awareness, not a counter."],contact:"Contact:"}
+};
+var lang="ar",log=[],S={tab:0,step:1,q:"",t:"",type:"",err:false,keep:false};
+try{log=JSON.parse(localStorage.getItem("hf_log")||"[]");lang=localStorage.getItem("hf_lang")||"ar"}catch(e){log=[];}
+function save(){try{localStorage.setItem("hf_log",JSON.stringify(log))}catch(e){}}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function toggleLang(){lang=lang==="ar"?"en":"ar";try{localStorage.setItem("hf_lang",lang)}catch(e){}render()}
+function go(i){S.tab=i;render()}
+function pick(k){S.type=k;S.err=false;render()}
+function nextStep(){var q=document.getElementById("q");S.q=q?q.value.trim():S.q;if(!S.q||!S.type){S.err=true;render();return}S.err=false;S.step=2;render()}
+function finish(o){var t=document.getElementById("t"),k=document.getElementById("k");S.t=t?t.value.trim():"";S.keep=k?k.checked:false;log.unshift({d:Date.now(),q:S.keep?S.q:"",t:S.keep?S.t:"",type:S.type,o:o});save();S.q="";S.t="";S.type="";S.step=1;S.keep=false;S.tab=2;render();toast(T[lang].saved)}
+function removeAt(i){log.splice(i,1);save();render()}
+function clearAll(){if(confirm(T[lang].confirm)){log=[];save();render()}}
+function toast(m){var e=document.getElementById("toast");e.textContent=m;e.hidden=false;setTimeout(function(){e.hidden=true},1800)}
+function copyPhrase(){var p=T[lang].phrase;try{navigator.clipboard.writeText(p).then(function(){toast(T[lang].copied)},function(){toast(p)})}catch(e){toast(p)}}
+function check(L){
+if(S.step===1){
+var chips=Object.keys(L.types).map(function(k){return '<button class="chip'+(S.type===k?' on':'')+'" onclick="pick(\''+k+'\')">'+L.types[k]+'</button>'}).join("");
+return '<div class="card"><h2>'+L.q1+'</h2><textarea id="q" placeholder="'+L.q1p+'" oninput="S.q=this.value">'+esc(S.q)+'</textarea><div class="meta" style="margin-top:14px">'+L.kind+'</div><div class="chips">'+chips+'</div>'+(S.err?'<p class="err">'+L.need+'</p>':'')+'<button class="primary" onclick="nextStep()">'+L.next+'</button></div>';
+}
+return '<div class="nudge">'+L.nudge[S.type]+'</div><div class="card"><h2>'+L.q2+'</h2><textarea id="t" placeholder="'+L.q2p+'">'+esc(S.t)+'</textarea><label class="keep" style="margin-top:12px"><input type="checkbox" id="k"'+(S.keep?' checked':'')+'>'+L.keep+'</label></div><div class="meta">'+L.now+'</div>'+
+['try','ask','none'].map(function(k){return '<button class="out" onclick="finish(\''+k+'\')">'+L.o[k]+'</button>'}).join("");
+}
+function learn(L){
+return '<h2>'+L.learn+'</h2>'+L.tips.map(function(t,i){return '<div class="card"><strong>'+t[0]+'</strong><p style="margin:6px 0 0">'+t[1]+'</p>'+(i===1?'<div class="phrase">'+L.phrase+'</div><button class="ghost" onclick="copyPhrase()">'+L.copy+'</button>':'')+'</div>'}).join("");
+}
+function logv(L){
+var n=log.length,good=log.filter(function(e){return e.o!=="ask"}).length,pct=n?good/n:0,C=2*Math.PI*52;
+var ring='<svg class="ring" width="150" height="150" viewBox="0 0 120 120" role="img" aria-label="'+Math.round(pct*100)+'%"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--line)" stroke-width="10"></circle><circle class="ringfill" id="rf" cx="60" cy="60" r="52" fill="none" stroke="var(--accent)" stroke-width="10" stroke-linecap="round" transform="rotate(-90 60 60)" stroke-dasharray="0 '+C+'"></circle><text x="60" y="68" text-anchor="middle" font-size="26" font-weight="800" fill="var(--ink)">'+Math.round(pct*100)+'%</text></svg>';
+var by=Object.keys(L.types).map(function(k){var c=log.filter(function(e){return e.type===k}).length;return '<div class="row"><span>'+L.types[k]+'</span><span class="meta">'+c+'</span></div><div class="bar"><i style="width:'+(n?c/n*100:0)+'%"></i></div>'}).join("");
+setTimeout(function(){var r=document.getElementById("rf");if(r)r.setAttribute("stroke-dasharray",(pct*C)+" "+C)},60);
+var list=n?log.map(function(e,i){var dt=new Date(e.d).toLocaleDateString(lang==="ar"?"ar":"en",{day:"numeric",month:"short"});
+return '<div class="card"><div class="row"><strong>'+L.types[e.type]+'</strong><span class="meta">'+dt+'</span></div>'+(e.q?'<p style="margin:8px 0">'+esc(e.q)+'</p>':'')+(e.t?'<p class="meta" style="margin:0 0 8px">'+esc(e.t)+'</p>':'')+'<div class="row"><span class="meta">'+L.o[e.o]+'</span><button class="del" onclick="removeAt('+i+')">'+L.del+'</button></div></div>'}).join(""):'<div class="card"><p class="meta" style="margin:0">'+L.empty+'</p></div>';
+return '<div class="card" style="text-align:center">'+ring+'<div style="font-weight:700">'+L.ringText+'</div><div class="meta" style="margin-top:6px">'+L.total+': '+n+'</div><p class="meta" style="margin:10px 0 0">'+L.mirror+'</p></div><div class="card"><div style="font-weight:800;margin-bottom:8px">'+L.by+'</div>'+by+'</div>'+list+(n?'<button class="ghost" onclick="clearAll()">'+L.clear+'</button>':'');
+}
+function parents(L){
+return '<h2>'+L.pt+'</h2><div class="card"><p style="margin:0 0 8px">'+L.pb[0]+'</p><ul>'+L.pi.map(function(x){return '<li>'+x+'</li>'}).join("")+'</ul><p class="meta" style="margin:10px 0 0">'+L.contact+' <a href="mailto:ysfbgz101@gmail.com" style="color:var(--accent)">ysfbgz101@gmail.com</a></p></div>';
+}
+function render(){
+var L=T[lang];
+document.documentElement.lang=lang;document.documentElement.dir=lang==="ar"?"rtl":"ltr";
+document.getElementById("langBtn").textContent=L.lang;
+document.getElementById("tag").textContent=L.tag;
+document.getElementById("nav").innerHTML=L.tabs.map(function(t,i){return '<button class="'+(S.tab===i?'on':'')+'" onclick="go('+i+')">'+t+'</button>'}).join("");
+document.getElementById("app").innerHTML=[check,learn,logv,parents][S.tab](L);
+}
+render();
+</script>
+</body>
+</html>
